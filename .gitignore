@@ -1,3 +1,4 @@
 EInvoicingBackend.iml
 target
 .idea
+.aws-sam
