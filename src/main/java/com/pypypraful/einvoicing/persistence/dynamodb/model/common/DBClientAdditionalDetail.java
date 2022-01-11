@@ -8,20 +8,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Builder
 @Getter
+@Builder
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @DynamoDBDocument
-public class DBCustomerProfile {
+public class DBClientAdditionalDetail {
 
-    @DynamoDBAttribute(attributeName = "customerName")
-    private String customerName;
+    @DynamoDBAttribute(attributeName = "panNumber")
+    private String panNumber;
 
-    @DynamoDBAttribute(attributeName = "homeAddress")
-    private DBAddress homeAddress;
-
-    @DynamoDBAttribute(attributeName = "customerPhoneNumber")
-    private String customerPhoneNumber;
+    @DynamoDBAttribute(attributeName = "gstIN")
+    private String gstIN;
 }

@@ -18,8 +18,14 @@ public class UpdateUserProfileHandler implements RequestHandler<UpdateUserProfil
         inventoryRepository.updateUserProfileRecord(updateUserProfileRequest);
         return UpdateUserProfileResponse.builder()
                 .username(updateUserProfileRequest.getUsername())
-                .businessProfile(updateUserProfileRequest.getBusinessProfile())
-                .customerProfile(updateUserProfileRequest.getCustomerProfile())
+                .profileType(updateUserProfileRequest.getProfileType())
+                .pincode(updateUserProfileRequest.getPincode())
+                .name(updateUserProfileRequest.getName())
+                .addressLine(updateUserProfileRequest.getAddressLine())
+                .clientAdditionalDetail(updateUserProfileRequest.getClientAdditionalDetail())
+                .phoneNumber(updateUserProfileRequest.getPhoneNumber())
+                .city(updateUserProfileRequest.getCity())
+                .state(updateUserProfileRequest.getState())
                 .build();
     }
 

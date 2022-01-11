@@ -1,7 +1,7 @@
 package com.pypypraful.einvoicing.model.request;
 
-import com.pypypraful.einvoicing.model.common.BusinessProfile;
-import com.pypypraful.einvoicing.model.common.CustomerProfile;
+import com.pypypraful.einvoicing.model.common.ClientAdditionalDetail;
+import com.pypypraful.einvoicing.model.enums.ProfileType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +15,12 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 public class UpdateUserProfileRequest {
     private String username;
-    private BusinessProfile businessProfile;
-    private CustomerProfile customerProfile;
+    private ProfileType profileType;
+    private Integer pincode;
+    private ClientAdditionalDetail clientAdditionalDetail;
+    private String name;
+    private String phoneNumber;
+    private String addressLine;
+    private String city;
+    private String state;
 }

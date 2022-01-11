@@ -6,15 +6,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Builder
 @Getter
 @Setter
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class BusinessProfile {
-    private String businessName;
-    private Address businessAddress;
-    private String businessPhoneNumber;
+@NoArgsConstructor
+public class ClientAdditionalDetail {
     private String panNumber;
     private String gstIN;
 }
