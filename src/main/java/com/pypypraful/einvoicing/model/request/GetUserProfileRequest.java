@@ -13,4 +13,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class GetUserProfileRequest {
     private String username;
+    private String profileType;
+    protected Integer pincode;
 }

@@ -1,13 +1,18 @@
 package com.pypypraful.einvoicing.persistence.dynamodb.model;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.*;
-import com.pypypraful.einvoicing.model.enums.ProfileType;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexRangeKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import com.pypypraful.einvoicing.persistence.dynamodb.model.common.DBClientAdditionalDetail;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import static com.pypypraful.einvoicing.persistence.dynamodb.InventoryTableConstants.USER_PROFILE_TABLE_NAME;
 
@@ -16,10 +21,11 @@ import static com.pypypraful.einvoicing.persistence.dynamodb.InventoryTableConst
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @DynamoDBTable(tableName = USER_PROFILE_TABLE_NAME)
 public class DBUserProfile {
 
-    public static final String PINCODE_INDEX = "pincode-index";
+    public static final String PINCODE_PROFILE_TYPE_INDEX = "pincode-profileType-index";
     public static final String PROFILE_TYPE = "profileType";
     public static final String USERNAME = "username";
     public static final String PINCODE = "pincode";
@@ -27,11 +33,12 @@ public class DBUserProfile {
     @DynamoDBHashKey(attributeName = USERNAME)
     private String username;
 
-    @DynamoDBIndexRangeKey(attributeName = PROFILE_TYPE)
+    @DynamoDBRangeKey(attributeName = PROFILE_TYPE)
+    @DynamoDBIndexRangeKey(globalSecondaryIndexName = PINCODE_PROFILE_TYPE_INDEX)
     private String profileType;
 
     @DynamoDBIndexHashKey(attributeName = PINCODE,
-            globalSecondaryIndexName = PINCODE_INDEX)
+            globalSecondaryIndexName = PINCODE_PROFILE_TYPE_INDEX)
     private Integer pincode;
 
     @DynamoDBAttribute(attributeName = "clientAdditionalDetail")

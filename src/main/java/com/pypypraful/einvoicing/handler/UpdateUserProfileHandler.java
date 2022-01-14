@@ -2,6 +2,7 @@ package com.pypypraful.einvoicing.handler;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.pypypraful.einvoicing.model.common.UserProfile;
 import com.pypypraful.einvoicing.model.request.UpdateUserProfileRequest;
 import com.pypypraful.einvoicing.model.response.UpdateUserProfileResponse;
 import com.pypypraful.einvoicing.persistence.repository.DynamoDBInventoryRepository;
@@ -17,15 +18,18 @@ public class UpdateUserProfileHandler implements RequestHandler<UpdateUserProfil
         inventoryRepository = new DynamoDBInventoryRepository();
         inventoryRepository.updateUserProfileRecord(updateUserProfileRequest);
         return UpdateUserProfileResponse.builder()
-                .username(updateUserProfileRequest.getUsername())
-                .profileType(updateUserProfileRequest.getProfileType())
-                .pincode(updateUserProfileRequest.getPincode())
-                .name(updateUserProfileRequest.getName())
-                .addressLine(updateUserProfileRequest.getAddressLine())
-                .clientAdditionalDetail(updateUserProfileRequest.getClientAdditionalDetail())
-                .phoneNumber(updateUserProfileRequest.getPhoneNumber())
-                .city(updateUserProfileRequest.getCity())
-                .state(updateUserProfileRequest.getState())
+                .userProfile(UserProfile.builder()
+                    .username(updateUserProfileRequest.getUserProfile().getUsername())
+                    .profileType(updateUserProfileRequest.getUserProfile().getProfileType())
+                    .pincode(updateUserProfileRequest.getUserProfile().getPincode())
+                    .name(updateUserProfileRequest.getUserProfile().getName())
+                    .addressLine(updateUserProfileRequest.getUserProfile().getAddressLine())
+                    .clientAdditionalDetail(updateUserProfileRequest.getUserProfile().getClientAdditionalDetail())
+                    .phoneNumber(updateUserProfileRequest.getUserProfile().getPhoneNumber())
+                    .city(updateUserProfileRequest.getUserProfile().getCity())
+                    .state(updateUserProfileRequest.getUserProfile().getState())
+                    .build()
+                )
                 .build();
     }
 

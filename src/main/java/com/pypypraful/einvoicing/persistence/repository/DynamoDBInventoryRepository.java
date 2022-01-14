@@ -12,10 +12,13 @@ import com.pypypraful.einvoicing.persistence.dynamodb.model.DBUserProfile;
 import com.pypypraful.einvoicing.persistence.dynamodb.model.adapter.InventoryDBAdapter;
 import com.pypypraful.einvoicing.persistence.dynamodb.model.adapter.UserProfileDBAdapter;
 
+import java.util.List;
+
 public class DynamoDBInventoryRepository implements InventoryRepository {
 
     private final InventoryDao inventoryDao;
     private final InventoryDBAdapter inventoryDBAdapter;
+    private List<DBUserProfile> dbUserProfiles;
 
     public DynamoDBInventoryRepository(){
         inventoryDao = new InventoryDao();
@@ -40,7 +43,12 @@ public class DynamoDBInventoryRepository implements InventoryRepository {
 
     @Override
     public GetUserProfileResponse getUserProfileRecord(GetUserProfileRequest getUserProfileRequest) {
-        DBUserProfile dbUserProfile = inventoryDao.getUserProfileFromDB(getUserProfileRequest.getUsername());
-        return UserProfileDBAdapter.convertDBUserProfileToUserProfileResponse(dbUserProfile);
+        if (getUserProfileRequest.getUsername() != null)
+            dbUserProfiles = inventoryDao.getUserProfileByUsernameFromDB(
+                    getUserProfileRequest.getUsername(), getUserProfileRequest.getProfileType());
+        else if (getUserProfileRequest.getPincode() != null)
+            dbUserProfiles = inventoryDao.getUserProfilesByPincodeFromDB(
+                    getUserProfileRequest.getPincode(), getUserProfileRequest.getProfileType());
+        return UserProfileDBAdapter.convertDBUserProfileToUserProfileResponse(dbUserProfiles);
     }
 }

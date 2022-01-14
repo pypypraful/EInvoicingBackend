@@ -1,10 +1,11 @@
 package com.pypypraful.einvoicing.model.response;
 
-import com.pypypraful.einvoicing.model.request.UpdateUserProfileRequest;
+import com.pypypraful.einvoicing.model.common.UserProfile;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.experimental.SuperBuilder;
 
 @Getter
-@SuperBuilder
-public class UpdateUserProfileResponse extends UpdateUserProfileRequest {
+@Builder
+public class UpdateUserProfileResponse {
+    private UserProfile userProfile;
 }
