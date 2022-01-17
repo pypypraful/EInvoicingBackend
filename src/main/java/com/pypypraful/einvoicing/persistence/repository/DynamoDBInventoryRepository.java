@@ -1,13 +1,13 @@
 package com.pypypraful.einvoicing.persistence.repository;
 
-import com.pypypraful.einvoicing.model.request.GetInventoryForUserRequest;
+import com.pypypraful.einvoicing.model.request.GetProductListRequest;
 import com.pypypraful.einvoicing.model.request.GetUserProfileRequest;
-import com.pypypraful.einvoicing.model.request.UpdateInventoryForUserRequest;
+import com.pypypraful.einvoicing.model.request.UpdateSellerInventoryRequest;
 import com.pypypraful.einvoicing.model.request.UpdateUserProfileRequest;
-import com.pypypraful.einvoicing.model.response.GetInventoryForUserResponse;
+import com.pypypraful.einvoicing.model.response.GetProductListResponse;
 import com.pypypraful.einvoicing.model.response.GetUserProfileResponse;
 import com.pypypraful.einvoicing.persistence.dynamodb.InventoryDao;
-import com.pypypraful.einvoicing.persistence.dynamodb.model.DBInventory;
+import com.pypypraful.einvoicing.persistence.dynamodb.model.DBSellerInventory;
 import com.pypypraful.einvoicing.persistence.dynamodb.model.DBUserProfile;
 import com.pypypraful.einvoicing.persistence.dynamodb.model.adapter.InventoryDBAdapter;
 import com.pypypraful.einvoicing.persistence.dynamodb.model.adapter.UserProfileDBAdapter;
@@ -26,14 +26,15 @@ public class DynamoDBInventoryRepository implements InventoryRepository {
     }
 
     @Override
-    public void updateInventoryRecord(UpdateInventoryForUserRequest updateInventoryForUserRequest) {
-        inventoryDao.persistData(inventoryDBAdapter.convertInventoryToDBModel(updateInventoryForUserRequest));
+    public void updateSellerInventoryRecord(UpdateSellerInventoryRequest updateSellerInventoryRequest) {
+        inventoryDao.saveSellerInventory(inventoryDBAdapter.convertSellerInventoryToDBModel(updateSellerInventoryRequest));
     }
 
     @Override
-    public GetInventoryForUserResponse getInventoryRecord(GetInventoryForUserRequest getInventoryForUserRequest) {
-        DBInventory dbInventory = inventoryDao.getData(inventoryDBAdapter.convertGetInventoryForUserRequestToDBModel(getInventoryForUserRequest));
-        return inventoryDBAdapter.convertInventoryToUserResponse(dbInventory);
+    public GetProductListResponse getProductList(GetProductListRequest getProductListRequest) {
+        List<DBSellerInventory> dbSellerInventory = inventoryDao.getSellerInventoryByUsername(
+                getProductListRequest.getUsername());
+        return inventoryDBAdapter.convertDBSellerInventoryToProductListResponse(dbSellerInventory);
     }
 
     @Override
