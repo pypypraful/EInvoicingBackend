@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import static com.pypypraful.einvoicing.persistence.dynamodb.InventoryTableConstants.CUSTOMER_CART_TABLE_NAME;
+import static com.pypypraful.einvoicing.persistence.dynamodb.InventoryTableConstants.CUSTOMER_ID;
 
 @Builder
 @Getter
@@ -20,7 +21,7 @@ import static com.pypypraful.einvoicing.persistence.dynamodb.InventoryTableConst
 @DynamoDBTable(tableName = CUSTOMER_CART_TABLE_NAME)
 public class DBCustomerCart {
 
-    @DynamoDBHashKey(attributeName = "customerId")
+    @DynamoDBHashKey(attributeName = CUSTOMER_ID)
     public String customerId;
 
     @DynamoDBRangeKey(attributeName = "productId")
@@ -28,4 +29,7 @@ public class DBCustomerCart {
 
     @DynamoDBAttribute(attributeName = "quantity")
     public Integer quantity;
+
+    @DynamoDBAttribute(attributeName = "status")
+    public Integer status;
 }

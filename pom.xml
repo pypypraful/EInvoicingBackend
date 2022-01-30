@@ -9,8 +9,7 @@
   <version>1.0-SNAPSHOT</version>
 
   <name>EInvoicingBackend</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
+  <url>https://pypypraful.github.io/QRCodeGenerator</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -28,6 +27,16 @@
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-lambda-java-events</artifactId>
       <version>1.3.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-dynamodb</artifactId>
+      <version>1.12.146</version>
+    </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-stepfunctions</artifactId>
+      <version>1.11.227</version>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>

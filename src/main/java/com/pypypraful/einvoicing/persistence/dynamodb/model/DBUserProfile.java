@@ -14,6 +14,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import static com.pypypraful.einvoicing.persistence.dynamodb.InventoryTableConstants.PINCODE;
+import static com.pypypraful.einvoicing.persistence.dynamodb.InventoryTableConstants.PROFILE_TYPE;
+import static com.pypypraful.einvoicing.persistence.dynamodb.InventoryTableConstants.USERNAME;
 import static com.pypypraful.einvoicing.persistence.dynamodb.InventoryTableConstants.USER_PROFILE_TABLE_NAME;
 
 @Builder
@@ -26,9 +29,6 @@ import static com.pypypraful.einvoicing.persistence.dynamodb.InventoryTableConst
 public class DBUserProfile {
 
     public static final String PINCODE_PROFILE_TYPE_INDEX = "pincode-profileType-index";
-    public static final String PROFILE_TYPE = "profileType";
-    public static final String USERNAME = "username";
-    public static final String PINCODE = "pincode";
 
     @DynamoDBHashKey(attributeName = USERNAME)
     private String username;

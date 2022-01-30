@@ -18,7 +18,7 @@ public class SellerInventory {
     private Integer productQuantity;
     private String productSubCategory;
     private String productCategory;
-    private Integer productPrice;
+    private Double productPrice;
     private Integer productWeightPerUnitInGrams;
     private String productId;
     private String productName;

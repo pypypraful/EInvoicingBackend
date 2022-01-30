@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import static com.pypypraful.einvoicing.persistence.dynamodb.InventoryTableConstants.PRODUCT_QUANTITY;
 import static com.pypypraful.einvoicing.persistence.dynamodb.InventoryTableConstants.SELLER_INVENTORY_TABLE_NAME;
 
 @Builder
@@ -26,7 +27,6 @@ public class DBSellerInventory {
     public static final String USERNAME_CATEGORY_INDEX = "username-productCategory-index";
 
     public static final String PRODUCT_ID = "productId";
-    public static final String CUSTOMER_ID = "customerId";
 
     @DynamoDBIndexHashKey(
             attributeName = "username",
@@ -36,7 +36,7 @@ public class DBSellerInventory {
     @DynamoDBAttribute(attributeName = "productDescription")
     public String productDescription;
 
-    @DynamoDBAttribute(attributeName = "productQuantity")
+    @DynamoDBAttribute(attributeName = PRODUCT_QUANTITY)
     public Integer productQuantity;
 
     @DynamoDBAttribute(attributeName = "productSubCategory")
@@ -50,7 +50,7 @@ public class DBSellerInventory {
     public String productCategory;
 
     @DynamoDBAttribute(attributeName = "productPrice")
-    public Integer productPrice;
+    public Double productPrice;
 
     @DynamoDBAttribute(attributeName = "productWeightPerUnitInGrams")
     public Integer productWeightPerUnitInGrams;

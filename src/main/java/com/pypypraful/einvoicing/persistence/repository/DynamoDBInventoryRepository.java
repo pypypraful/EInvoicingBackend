@@ -1,13 +1,23 @@
 package com.pypypraful.einvoicing.persistence.repository;
 
-import com.pypypraful.einvoicing.model.request.*;
+import com.pypypraful.einvoicing.model.enums.OrderStatus;
+import com.pypypraful.einvoicing.model.request.GetProductInCartRequest;
+import com.pypypraful.einvoicing.model.request.GetProductListRequest;
+import com.pypypraful.einvoicing.model.request.GetUserProfileRequest;
+import com.pypypraful.einvoicing.model.request.UpdateProductInCartRequest;
+import com.pypypraful.einvoicing.model.request.UpdateSellerInventoryRequest;
+import com.pypypraful.einvoicing.model.request.UpdateUserProfileRequest;
+import com.pypypraful.einvoicing.model.request.WorkflowMetadataRequest;
 import com.pypypraful.einvoicing.model.response.GetProductListResponse;
 import com.pypypraful.einvoicing.model.response.GetUserProfileResponse;
 import com.pypypraful.einvoicing.model.response.UpdateProductInCartResponse;
+import com.pypypraful.einvoicing.model.response.WorkflowMetadataResponse;
 import com.pypypraful.einvoicing.persistence.dynamodb.InventoryDao;
 import com.pypypraful.einvoicing.persistence.dynamodb.model.DBCustomerCart;
+import com.pypypraful.einvoicing.persistence.dynamodb.model.DBOrder;
 import com.pypypraful.einvoicing.persistence.dynamodb.model.DBSellerInventory;
 import com.pypypraful.einvoicing.persistence.dynamodb.model.DBUserProfile;
+import com.pypypraful.einvoicing.persistence.dynamodb.model.DBWorkflowMetadata;
 import com.pypypraful.einvoicing.persistence.dynamodb.model.adapter.InventoryDBAdapter;
 import com.pypypraful.einvoicing.persistence.dynamodb.model.adapter.UserProfileDBAdapter;
 
@@ -69,6 +79,16 @@ public class DynamoDBInventoryRepository implements InventoryRepository {
     }
 
     @Override
+    public List<DBCustomerCart> getCustomerCartByCustomerId(String customerId) {
+        return inventoryDao.getCustomerCartByCustomerId(customerId);
+    }
+
+    @Override
+    public DBSellerInventory getSellerProductByProductId(String productId) {
+        return inventoryDao.getSellerProductByProductId(productId).get(0);
+    }
+
+    @Override
     public UpdateProductInCartResponse updateCustomerCart(UpdateProductInCartRequest productInCartRequest) {
         List<DBCustomerCart> dbCustomerCartList =
                 syncDBCustomerCartWithNewCartRequest(
@@ -82,6 +102,53 @@ public class DynamoDBInventoryRepository implements InventoryRepository {
                 .customerId(productInCartRequest.getCustomerId())
                 .products(getCartProductsFromDBCustomerCart(dbCustomerCartList, dbSellerInventoryList))
                 .build();
+    }
+
+    @Override
+    public void checkoutProductFromCustomerCart(DBSellerInventory dbSellerInventory,
+                                                DBCustomerCart customerCart, String orderId) {
+        dbSellerInventory.setProductQuantity(dbSellerInventory.getProductQuantity() - customerCart.getQuantity());
+        DBOrder dbOrder = DBOrder.builder()
+                .sellerId(dbSellerInventory.getUsername())
+                .customerId(customerCart.getCustomerId())
+                .productId(dbSellerInventory.getProductId())
+                .price(dbSellerInventory.getProductPrice())
+                .orderId(orderId)
+                .orderStatus(OrderStatus.CHECKOUT.toString())
+                .quantity(customerCart.getQuantity())
+                .build();
+        inventoryDao.removeProductFromSellerInventoryAndAddToOrder(dbOrder);
+    }
+
+    @Override
+    public void discardProductFromCheckout(DBOrder dbOrder) {
+        inventoryDao.removeProductFromOrderAndAddToInventory(dbOrder);
+    }
+
+    @Override
+    public WorkflowMetadataResponse saveWorkflowMetadata(WorkflowMetadataRequest workflowMetadataRequest) {
+        DBWorkflowMetadata dbWorkflowMetadata =
+                DBWorkflowMetadata.builder()
+                        .workflowType(workflowMetadataRequest.getWorkflowType())
+                        .executionArn(workflowMetadataRequest.getExecutionArn())
+                        .executionName(workflowMetadataRequest.getExecutionName())
+                        .status(workflowMetadataRequest.getStatus())
+                        .customerId(workflowMetadataRequest.getCustomerId())
+                        .stepTaskToken(workflowMetadataRequest.getStepTaskToken())
+                        .build();
+        inventoryDao.storeWorkflowMetadata(dbWorkflowMetadata);
+        return WorkflowMetadataResponse.builder()
+                .customerId(workflowMetadataRequest.getCustomerId())
+                .workflowType(workflowMetadataRequest.getWorkflowType())
+                .executionName(workflowMetadataRequest.getExecutionName())
+                .executionArn(workflowMetadataRequest.getExecutionArn())
+                .status(workflowMetadataRequest.getStatus())
+                .build();
+    }
+
+    @Override
+    public List<DBOrder> getDBOrderByOrderIdAndCustomerId(String customerId, String orderId) {
+        return inventoryDao.getDBOrderByOrderIdAndCustomerId(orderId, customerId);
     }
 
     private void syncCustomerCartWithSellerInventory(

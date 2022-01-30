@@ -6,12 +6,12 @@ import org.junit.Test;
 
 public class GetSellerInventoryHandlerTest {
 
-    private GetInventoryHandler getSellerInventoryHandler;
+    private GetSellerInventoryHandler getSellerInventoryHandler;
 
     @Test
     @Ignore
     public void testGetSellerInventoryHandler() {
-        getSellerInventoryHandler = new GetInventoryHandler();
+        getSellerInventoryHandler = new GetSellerInventoryHandler();
         GetProductListRequest getProductListRequest = GetProductListRequest.builder()
                 .username("Praful")
                 .build();

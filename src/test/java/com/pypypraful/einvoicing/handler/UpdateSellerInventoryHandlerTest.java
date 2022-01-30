@@ -7,14 +7,14 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
-public class SaveInventoryHandlerTest {
+public class UpdateSellerInventoryHandlerTest {
 
-    private SaveInventoryHandler saveInventoryHandler;
+    private UpdateSellerInventoryHandler updateSellerInventoryHandler;
 
     @Test
     @Ignore
     public void testHandler(){
-        saveInventoryHandler = new SaveInventoryHandler();
+        updateSellerInventoryHandler = new UpdateSellerInventoryHandler();
         UpdateSellerInventoryRequest updateSellerInventoryRequest = new UpdateSellerInventoryRequest();
         updateSellerInventoryRequest.setSellerInventories(Arrays.asList(SellerInventory.builder()
                 .username("Praful")
@@ -22,10 +22,10 @@ public class SaveInventoryHandlerTest {
                 .productSubCategory("Almonds")
                 .productCategory("Dry Fruits")
                 .productQuantity(100)
-                .productPrice(2000)
+                .productPrice(2000.00)
                 .productDescription("Description for the Almonds")
                 .productWeightPerUnitInGrams(200)
                 .build()));
-        saveInventoryHandler.handleRequest(updateSellerInventoryRequest, null);
+        updateSellerInventoryHandler.handleRequest(updateSellerInventoryRequest, null);
     }
 }

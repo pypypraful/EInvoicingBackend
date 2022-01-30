@@ -1,20 +1,34 @@
 package com.pypypraful.einvoicing.persistence.dynamodb;
 
-import com.amazonaws.regions.RegionUtils;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 
 public class DynamoDBClient {
 
-    private final static String REGION = "ap-south-1";
     private static DynamoDBMapper dynamoDBMapper;
+    private static AmazonDynamoDB client;
+    private static DynamoDB dynamoDBDocumentClient;
 
-    public static DynamoDBMapper getDynamoDbClient() {
+    public static AmazonDynamoDB getDynamoDbClient() {
+        if (client == null) {
+            client = AmazonDynamoDBClientBuilder.defaultClient();
+        }
+        return client;
+    }
+
+    public static DynamoDBMapper getDynamoDBMapperClient() {
         if (dynamoDBMapper == null) {
-            AmazonDynamoDBClient client = new AmazonDynamoDBClient();
-            client.setRegion(RegionUtils.getRegion(REGION));
-            dynamoDBMapper = new DynamoDBMapper(client);
+            dynamoDBMapper = new DynamoDBMapper(getDynamoDbClient());
         }
         return dynamoDBMapper;
+    }
+
+    public static DynamoDB getDynamoDBDocumentClient() {
+        if (dynamoDBDocumentClient == null) {
+            dynamoDBDocumentClient = new DynamoDB(getDynamoDbClient());
+        }
+        return dynamoDBDocumentClient;
     }
 }

@@ -7,7 +7,7 @@ import com.pypypraful.einvoicing.model.response.GetProductListResponse;
 import com.pypypraful.einvoicing.persistence.repository.DynamoDBInventoryRepository;
 import com.pypypraful.einvoicing.persistence.repository.InventoryRepository;
 
-public class GetInventoryHandler implements RequestHandler<GetProductListRequest, GetProductListResponse> {
+public class GetSellerInventoryHandler implements RequestHandler<GetProductListRequest, GetProductListResponse> {
 
     private InventoryRepository inventoryRepository;
 
