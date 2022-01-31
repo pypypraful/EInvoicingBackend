@@ -1,6 +1,7 @@
 package com.pypypraful.einvoicing.persistence.repository;
 
 import com.pypypraful.einvoicing.model.enums.OrderStatus;
+import com.pypypraful.einvoicing.model.request.GetNearestSellersProfileRequest;
 import com.pypypraful.einvoicing.model.request.GetProductInCartRequest;
 import com.pypypraful.einvoicing.model.request.GetProductListRequest;
 import com.pypypraful.einvoicing.model.request.GetUserProfileRequest;
@@ -8,9 +9,10 @@ import com.pypypraful.einvoicing.model.request.UpdateProductInCartRequest;
 import com.pypypraful.einvoicing.model.request.UpdateSellerInventoryRequest;
 import com.pypypraful.einvoicing.model.request.UpdateUserProfileRequest;
 import com.pypypraful.einvoicing.model.request.WorkflowMetadataRequest;
+import com.pypypraful.einvoicing.model.response.GetNearestSellersProfileResponse;
 import com.pypypraful.einvoicing.model.response.GetProductListResponse;
-import com.pypypraful.einvoicing.model.response.GetUserProfileResponse;
 import com.pypypraful.einvoicing.model.response.UpdateProductInCartResponse;
+import com.pypypraful.einvoicing.model.response.UpdateUserProfileResponse;
 import com.pypypraful.einvoicing.model.response.WorkflowMetadataResponse;
 import com.pypypraful.einvoicing.persistence.dynamodb.InventoryDao;
 import com.pypypraful.einvoicing.persistence.dynamodb.model.DBCustomerCart;
@@ -55,14 +57,17 @@ public class DynamoDBInventoryRepository implements InventoryRepository {
     }
 
     @Override
-    public GetUserProfileResponse getUserProfileRecord(GetUserProfileRequest getUserProfileRequest) {
-        if (getUserProfileRequest.getUsername() != null)
-            dbUserProfiles = inventoryDao.getUserProfileByUsernameFromDB(
+    public UpdateUserProfileResponse getUserProfileRecord(GetUserProfileRequest getUserProfileRequest) {
+        dbUserProfiles = inventoryDao.getUserProfileByUsernameFromDB(
                     getUserProfileRequest.getUsername(), getUserProfileRequest.getProfileType());
-        else if (getUserProfileRequest.getPincode() != null)
-            dbUserProfiles = inventoryDao.getUserProfilesByPincodeFromDB(
-                    getUserProfileRequest.getPincode(), getUserProfileRequest.getProfileType());
         return UserProfileDBAdapter.convertDBUserProfileToUserProfileResponse(dbUserProfiles);
+    }
+
+    @Override
+    public GetNearestSellersProfileResponse getSellersProfile(GetNearestSellersProfileRequest getNearestSellersProfileRequest) {
+        dbUserProfiles = inventoryDao.getUserProfilesByPincodeFromDB(
+                getNearestSellersProfileRequest.getPincode(), getNearestSellersProfileRequest.getProfileType());
+        return UserProfileDBAdapter.convertDBUserProfileToSellersProfileResponse(dbUserProfiles);
     }
 
     @Override

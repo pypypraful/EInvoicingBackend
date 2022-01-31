@@ -10,6 +10,6 @@ import java.util.List;
 @SuperBuilder
 @Getter
 @Setter
-public class GetUserProfileResponse {
-    private List<UserProfile> userProfiles;
+public class GetNearestSellersProfileResponse {
+    private List<UserProfile> sellerProfiles;
 }

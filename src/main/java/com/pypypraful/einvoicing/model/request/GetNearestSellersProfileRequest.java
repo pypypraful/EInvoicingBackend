@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetUserProfileRequest {
-    private String username;
+public class GetNearestSellersProfileRequest {
     private String profileType;
+    private Integer pincode;
 }

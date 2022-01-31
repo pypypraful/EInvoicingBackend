@@ -81,7 +81,7 @@ public class InventoryDao {
         DynamoDBQueryExpression<DBUserProfile> queryExpression = new DynamoDBQueryExpression<DBUserProfile>()
                 .withIndexName(PINCODE_PROFILE_TYPE_INDEX)
                 .withConsistentRead(false)
-                .withKeyConditionExpression(PINCODE + EQUALS + VAL_1 + AND + PROFILE_TYPE + VAL_2)
+                .withKeyConditionExpression(PINCODE + EQUALS + VAL_1 + AND + PROFILE_TYPE + EQUALS + VAL_2)
                 .withExpressionAttributeValues(eav);
         return dynamoDBMapper.query(DBUserProfile.class, queryExpression);
     }
