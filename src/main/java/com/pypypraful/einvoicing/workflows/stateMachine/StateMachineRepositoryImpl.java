@@ -18,4 +18,9 @@ public class StateMachineRepositoryImpl implements StateMachineRepository {
                 .orderId(orderId)
                 .build());
     }
+
+    @Override
+    public void sendSuccessTaskToken(String taskToken) {
+        checkoutStateMachine.sendSuccessTaskToken(taskToken);
+    }
 }

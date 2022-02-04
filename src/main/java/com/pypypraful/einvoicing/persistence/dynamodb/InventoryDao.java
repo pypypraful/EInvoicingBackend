@@ -2,7 +2,10 @@ package com.pypypraful.einvoicing.persistence.dynamodb;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
+import com.amazonaws.services.dynamodbv2.datamodeling.TransactionWriteRequest;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
 import com.amazonaws.services.dynamodbv2.model.Delete;
@@ -10,7 +13,6 @@ import com.amazonaws.services.dynamodbv2.model.Put;
 import com.amazonaws.services.dynamodbv2.model.ReturnConsumedCapacity;
 import com.amazonaws.services.dynamodbv2.model.TransactWriteItem;
 import com.amazonaws.services.dynamodbv2.model.TransactWriteItemsRequest;
-import com.amazonaws.services.dynamodbv2.model.TransactWriteItemsResult;
 import com.amazonaws.services.dynamodbv2.model.Update;
 import com.pypypraful.einvoicing.persistence.dynamodb.model.DBCustomerCart;
 import com.pypypraful.einvoicing.persistence.dynamodb.model.DBOrder;
@@ -25,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig.SaveBehavior.UPDATE_SKIP_NULL_ATTRIBUTES;
 import static com.pypypraful.einvoicing.persistence.dynamodb.InventoryTableConstants.*;
 import static com.pypypraful.einvoicing.persistence.dynamodb.model.DBOrder.CUSTOMER_ID_ORDER_ID_INDEX;
 import static com.pypypraful.einvoicing.persistence.dynamodb.model.DBSellerInventory.PRODUCT_ID;
@@ -109,6 +112,8 @@ public class InventoryDao {
         dbOrderKey.put(CUSTOMER_ID, new AttributeValue(dbOrder.customerId));
         dbOrderKey.put("orderStatus", new AttributeValue(dbOrder.orderStatus));
         dbOrderKey.put("quantity", new AttributeValue().withN(dbOrder.quantity.toString()));
+        dbOrderKey.put("createdDate", new AttributeValue().withN(String.valueOf(System.currentTimeMillis())));
+        dbOrderKey.put("lastUpdateDate", new AttributeValue().withN(String.valueOf(System.currentTimeMillis())));
         Put put = new Put()
                 .withTableName(ORDER_TABLE_NAME)
                 .withItem(dbOrderKey);
@@ -118,7 +123,7 @@ public class InventoryDao {
         TransactWriteItemsRequest placeOrderTransaction = new TransactWriteItemsRequest()
                 .withTransactItems(actions)
                 .withReturnConsumedCapacity(ReturnConsumedCapacity.TOTAL);
-        TransactWriteItemsResult result = dynamoDBDocumentClient.transactWriteItems(placeOrderTransaction);
+        dynamoDBDocumentClient.transactWriteItems(placeOrderTransaction);
     }
 
     public void removeProductFromOrderAndAddToInventory(DBOrder dbOrder)
@@ -145,6 +150,21 @@ public class InventoryDao {
                 .withTransactItems(actions)
                 .withReturnConsumedCapacity(ReturnConsumedCapacity.TOTAL);
         dynamoDBDocumentClient.transactWriteItems(placeOrderTransaction);
+    }
+
+    public void updateOrderStatus(DBOrder dbOrder) {
+        final Map<String, AttributeValue> eav = new HashMap<>();
+        eav.put(VAL_1, new AttributeValue().withS(dbOrder.orderId));
+        final DynamoDBQueryExpression<DBOrder> queryExpression = new DynamoDBQueryExpression<DBOrder>()
+                .withKeyConditionExpression(ORDER_ID + EQUALS + VAL_1)
+                .withExpressionAttributeValues(eav);
+        final PaginatedQueryList<DBOrder> dbOrders = dynamoDBMapper.query(DBOrder.class, queryExpression);
+        TransactionWriteRequest request = new TransactionWriteRequest();
+        for (DBOrder order : dbOrders) {
+            order.setOrderStatus(dbOrder.getOrderStatus());
+            request.addUpdate(order);
+        }
+        dynamoDBMapper.transactionWrite(request);
     }
 
     public List<DBOrder> getDBOrderByOrderIdAndCustomerId(String orderId, String customerId)
@@ -204,6 +224,16 @@ public class InventoryDao {
 
     public void storeWorkflowMetadata(DBWorkflowMetadata dbWorkflowMetadata)
             throws ConditionalCheckFailedException {
-        dynamoDBMapper.save(dbWorkflowMetadata);
+        dynamoDBMapper.save(dbWorkflowMetadata, new DynamoDBMapperConfig(UPDATE_SKIP_NULL_ATTRIBUTES));
+    }
+
+    public List<DBWorkflowMetadata> getWorkflowMetadata(String executionName)
+            throws ConditionalCheckFailedException {
+        Map<String, AttributeValue> eav = new HashMap<>();
+        eav.put(VAL_1, new AttributeValue().withS(executionName));
+        DynamoDBQueryExpression<DBWorkflowMetadata> queryExpression = new DynamoDBQueryExpression<DBWorkflowMetadata>()
+                .withKeyConditionExpression(EXECUTION_NAME + EQUALS + VAL_1)
+                .withExpressionAttributeValues(eav);
+        return dynamoDBMapper.query(DBWorkflowMetadata.class, queryExpression);
     }
 }

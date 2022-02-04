@@ -14,6 +14,7 @@ public class InventoryTableConstants {
     public static final String PINCODE = "pincode";
     public static final String ORDER_ID = "orderId";
     public static final String CUSTOMER_ID = "customerId";
+    public static final String ORDER_STATUS = "orderStatus";
 
     public static final String VAL_1 = ":val1";
     public static final String VAL_2 = ":val2";
@@ -25,4 +26,5 @@ public class InventoryTableConstants {
     public static final String SET = " SET ";
 
     public static final String EXECUTION_NAME = "executionName";
+    public static final String EXECUTION_ARN = "executionArn";
 }

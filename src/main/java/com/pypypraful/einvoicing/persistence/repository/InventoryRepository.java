@@ -1,5 +1,6 @@
 package com.pypypraful.einvoicing.persistence.repository;
 
+import com.pypypraful.einvoicing.model.enums.OrderStatus;
 import com.pypypraful.einvoicing.model.request.GetNearestSellersProfileRequest;
 import com.pypypraful.einvoicing.model.request.GetProductInCartRequest;
 import com.pypypraful.einvoicing.model.request.GetProductListRequest;
@@ -41,9 +42,13 @@ public interface InventoryRepository {
 
     void checkoutProductFromCustomerCart(DBSellerInventory dbSellerInventory, DBCustomerCart customerCart, String orderId);
 
+    void updateOrderStatus(OrderStatus orderStatus, String orderId);
+
     void discardProductFromCheckout(DBOrder dbOrder);
 
     WorkflowMetadataResponse saveWorkflowMetadata(WorkflowMetadataRequest workflowMetadataRequest);
+
+    WorkflowMetadataResponse getWorkflowMetadata(String executionName);
 
     List<DBOrder> getDBOrderByOrderIdAndCustomerId(String customerId, String orderId);
 }

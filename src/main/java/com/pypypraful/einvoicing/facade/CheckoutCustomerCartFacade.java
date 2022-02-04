@@ -31,7 +31,7 @@ public class CheckoutCustomerCartFacade {
     public CheckoutCustomerCartResponse checkoutCustomerCart(CheckoutCustomerCartRequest checkoutCustomerCartRequest) {
         checkoutCustomerCartResponse.setCustomerId(checkoutCustomerCartRequest.getCustomerId());
         dbCustomerCart = inventoryRepository.getCustomerCartByCustomerId(checkoutCustomerCartRequest.getCustomerId());
-        String orderId = UUID.randomUUID().toString() + "-" + System.currentTimeMillis();
+        final String orderId = UUID.randomUUID().toString() + "-" + System.currentTimeMillis();
         stateMachineRepository.startCheckoutStateMachine(orderId, checkoutCustomerCartRequest.getCustomerId());
         for (DBCustomerCart customerCart : dbCustomerCart) {
             DBSellerInventory dbSellerInventory = inventoryRepository.getSellerProductByProductId(customerCart.productId);
@@ -42,10 +42,11 @@ public class CheckoutCustomerCartFacade {
                 inventoryRepository.checkoutProductFromCustomerCart(dbSellerInventory, customerCart, orderId);
                 addAcceptedProduct(dbSellerInventory, customerCart);
             } catch (Exception ex) {
-                System.out.println(ex);
+                ex.printStackTrace();
                 addRejectedProduct(dbSellerInventory, customerCart);
             }
         }
+        checkoutCustomerCartResponse.setTempOrderId(orderId);
         return checkoutCustomerCartResponse;
     }
 

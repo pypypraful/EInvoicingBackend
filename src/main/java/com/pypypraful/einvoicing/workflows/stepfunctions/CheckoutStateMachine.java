@@ -1,10 +1,15 @@
 package com.pypypraful.einvoicing.workflows.stepfunctions;
 
 import com.amazonaws.services.stepfunctions.AWSStepFunctions;
+import com.amazonaws.services.stepfunctions.model.SendTaskSuccessRequest;
+import com.amazonaws.services.stepfunctions.model.SendTaskSuccessResult;
 import com.amazonaws.services.stepfunctions.model.StartExecutionRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pypypraful.einvoicing.workflows.stateMachine.request.CheckoutOrder;
 import lombok.SneakyThrows;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class CheckoutStateMachine {
 
@@ -21,5 +26,15 @@ public class CheckoutStateMachine {
                     .withInput(new ObjectMapper().writeValueAsString(checkoutOrder))
                     .withName(checkoutOrder.getOrderId())
         );
+    }
+
+    @SneakyThrows
+    public void sendSuccessTaskToken(String taskToken) {
+        Map<String, String> map = new HashMap<>();
+        map.put("Custom", "Praful");
+        sfnClient.sendTaskSuccess(
+                new SendTaskSuccessRequest()
+                        .withOutput(new ObjectMapper().writeValueAsString(map))
+                        .withTaskToken(taskToken));
     }
 }

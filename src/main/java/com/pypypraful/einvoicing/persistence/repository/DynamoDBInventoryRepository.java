@@ -126,6 +126,14 @@ public class DynamoDBInventoryRepository implements InventoryRepository {
     }
 
     @Override
+    public void updateOrderStatus(OrderStatus orderStatus, String orderId) {
+        inventoryDao.updateOrderStatus(DBOrder.builder()
+                .orderStatus(orderStatus.toString())
+                .orderId(orderId)
+                .build());
+    }
+
+    @Override
     public void discardProductFromCheckout(DBOrder dbOrder) {
         inventoryDao.removeProductFromOrderAndAddToInventory(dbOrder);
     }
@@ -152,6 +160,20 @@ public class DynamoDBInventoryRepository implements InventoryRepository {
     }
 
     @Override
+    public WorkflowMetadataResponse getWorkflowMetadata(String executionName) {
+        DBWorkflowMetadata dbWorkflowMetadata =
+                inventoryDao.getWorkflowMetadata(executionName).get(0);
+        return WorkflowMetadataResponse.builder()
+                .customerId(dbWorkflowMetadata.getCustomerId())
+                .workflowType(dbWorkflowMetadata.getWorkflowType())
+                .executionName(dbWorkflowMetadata.getExecutionName())
+                .executionArn(dbWorkflowMetadata.getExecutionArn())
+                .stepTaskToken(dbWorkflowMetadata.getStepTaskToken())
+                .status(dbWorkflowMetadata.getStatus())
+                .build();
+    }
+
+    @Override
     public List<DBOrder> getDBOrderByOrderIdAndCustomerId(String customerId, String orderId) {
         return inventoryDao.getDBOrderByOrderIdAndCustomerId(orderId, customerId);
     }
@@ -173,22 +195,21 @@ public class DynamoDBInventoryRepository implements InventoryRepository {
     private List<DBCustomerCart> syncDBCustomerCartWithNewCartRequest(
             List<DBCustomerCart> dbCustomerCart, UpdateProductInCartRequest productInCartRequest) {
         List<DBCustomerCart> updatedDBCustomerCart = new ArrayList<>();
-        if (dbCustomerCart.size() == 0) {
+        boolean IsProductAlreadyPresentInDBCart = false;
+        for (DBCustomerCart customerCart : dbCustomerCart) {
+            if (customerCart.getProductId().equals(productInCartRequest.getProductId())) {
+                customerCart.setQuantity(productInCartRequest.getQuantity());
+                IsProductAlreadyPresentInDBCart = true;
+            }
+            updatedDBCustomerCart.add(customerCart);
+        }
+        if (!IsProductAlreadyPresentInDBCart)
             updatedDBCustomerCart.add(
                     DBCustomerCart.builder()
                             .customerId(productInCartRequest.getCustomerId())
                             .productId(productInCartRequest.getProductId())
                             .quantity(productInCartRequest.getQuantity())
-                            .build()
-            );
-            return updatedDBCustomerCart;
-        }
-        for (DBCustomerCart customerCart : dbCustomerCart) {
-            if (customerCart.getProductId().equals(productInCartRequest.getProductId())) {
-                customerCart.setQuantity(productInCartRequest.getQuantity());
-            }
-            updatedDBCustomerCart.add(customerCart);
-        }
+                            .build());
         return updatedDBCustomerCart;
     }
 
